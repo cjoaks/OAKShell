@@ -1,26 +1,23 @@
-﻿using Microsoft.Extensions.Logging;
-using OAKShell.Interfaces;
+﻿using OAKShell.Interfaces;
 
 namespace OAKShell.Services;
 
-public sealed class FileSystemOperationService(
-    ILogger<FileSystemOperationService> logger) : IFileSystemOperationService
+public sealed class FileSystemOperationService : IFileSystemOperationService
 {
-
-    private readonly ILogger<FileSystemOperationService> _logger = logger;
-
     /// <summary>
     /// Find files in the current directory matching the given pattern. 
     /// </summary>
     /// <param name="pattern"></param>
     /// <returns></returns>
-    public string[] FindFiles(string pattern) => Directory.GetFiles(Environment.CurrentDirectory, pattern); 
+    public string[] FindFiles(string pattern, string? directoryPath = null) 
+        => Directory.GetFiles(directoryPath ?? Environment.CurrentDirectory, pattern);
 
 
     /// <summary>
     /// Remove all files in the given array of file paths. 
     /// </summary>
     /// <param name="filePathArray"></param>
+    /// <returns></returns>
     public void RemoveFiles(string[] filePathArray)
     {
         if (filePathArray.Length == 0) return;
@@ -34,15 +31,37 @@ public sealed class FileSystemOperationService(
             }
             catch (IOException ex)
             { 
-                _logger.LogError("Error deleting file: {Message}", ex.Message);
+                Console.WriteLine($"Error deleting file: {ex.Message}");
             }
             catch (UnauthorizedAccessException ex)
             {
-                _logger.LogError("Permission denied: {Message}", ex.Message);
+                Console.WriteLine($"Permission denied: {ex.Message}");
             }
         }
-        if (_logger.IsEnabled(LogLevel.Information))
-            _logger.LogInformation("Successfully deleted {FileCount} files.", deletedCount); 
+        Console.WriteLine($"Successfully deleted {deletedCount} files."); 
     }
 
+    /// <summary>
+    /// Check if the given directory exists.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="createIfNotExists"></param>
+    /// <returns></returns>
+    public bool DirectoryExists(string path, bool createIfNotExists = false)
+    {
+        var directoryExists = Directory.Exists(path);
+        if (!directoryExists && createIfNotExists)
+        {
+            try
+            {
+                Directory.CreateDirectory(path);
+                directoryExists = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to create directory: {ex.Message}"); 
+            }
+        }
+        return directoryExists;
+    }
 }

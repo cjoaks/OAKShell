@@ -14,4 +14,5 @@ builder.Logging.AddConsole();
 using var host = builder.Build();
 
 var root = new RootCommand();
-root.AddOAKShellCommand<RemoveFilesCommand>(host); 
+root.AddOAKShellCommand<RemoveFilesCommand>(host);
+await root.Parse(args).InvokeAsync();
