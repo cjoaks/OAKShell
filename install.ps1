@@ -9,7 +9,7 @@
 #>
 
 $CurrentDirectory = (Get-Location).Path
-$ReleaseDirectory = "$CurrentDirectory\bin\Release\net10.0"
+$ReleaseDirectory = "$CurrentDirectory\OAKShell\bin\Release\net10.0"
 
 $CurrentUserPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ($CurrentUserPath -notlike "*$ReleaseDirectory*") {
