@@ -17,7 +17,7 @@ public sealed class GitDeployCommand(IProcessService processService) : IOAKShell
     /// <returns></returns>
     public Command Build()
     {
-        var command = new Command(Verb, Description)
+        var deployGit = new Command(Verb, Description)
         {
             new Option<string>("--path", "--repo", "-p")
             {
@@ -34,20 +34,20 @@ public sealed class GitDeployCommand(IProcessService processService) : IOAKShell
                 Required = true
             }
         }; 
-        command.SetAction(Handler);
-        return command;
+        deployGit.SetAction(Handler);
+        return deployGit;
     }
 
     /// <summary>
     /// Handler for sync-git command.
     /// </summary>
-    /// <param name="result"></param>
+    /// <param name="input"></param>
     /// <returns></returns>
-    public async Task Handler(ParseResult result)
+    public async Task Handler(ParseResult input)
     {
-        var sourceBranch = result.GetRequiredValue<string>("--source");
-        var destinationBranch = result.GetRequiredValue<string>("--destination"); 
-        var repoPath = result.GetValue<string>("--path");
+        var sourceBranch = input.GetRequiredValue<string>("--source");
+        var destinationBranch = input.GetRequiredValue<string>("--destination"); 
+        var repoPath = input.GetValue<string>("--path");
         string[] commandSequence = [
                 $"checkout {sourceBranch}", "pull origin",
                 $"checkout {destinationBranch}", "pull origin", 
@@ -55,8 +55,8 @@ public sealed class GitDeployCommand(IProcessService processService) : IOAKShell
                 ];
         foreach (var command in commandSequence)
         {
-            var status = await ExecuteGitCommandAsync(command, repoPath);
-            if (status != 0) return; 
+            var success = await ExecuteGitCommandAsync(command, repoPath);
+            if (!success) return; 
         }
         Console.WriteLine($"{sourceBranch} successfully deployed to {destinationBranch}.");
     }
@@ -67,11 +67,11 @@ public sealed class GitDeployCommand(IProcessService processService) : IOAKShell
     /// <param name="command"></param>
     /// <param name="workingDirectory"></param>
     /// <returns></returns>
-    private async Task<int> ExecuteGitCommandAsync(string command, string? workingDirectory = null)
+    private async Task<bool> ExecuteGitCommandAsync(string command, string? workingDirectory = null)
     {
         var result = await _processService.ExecuteProcessAsync("git", command, workingDirectory);
         if (result.ExitCode != 0)
             Console.Error.WriteLine($"Failed to execute command \"git {command}\": {result.StandardError}"); 
-        return result.ExitCode;
+        return result.ExitCode == 0;
     }
 }

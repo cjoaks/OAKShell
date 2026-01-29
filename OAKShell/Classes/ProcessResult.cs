@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OAKShell.Classes;
+﻿namespace OAKShell.Classes;
 
 public class ProcessResult
 {

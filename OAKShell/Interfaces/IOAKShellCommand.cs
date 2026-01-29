@@ -7,5 +7,5 @@ public interface IOAKShellCommand
     string Verb { get; }
     string Description { get; }
     Command Build();
-    Task Handler(ParseResult result); 
+    Task Handler(ParseResult input); 
 }

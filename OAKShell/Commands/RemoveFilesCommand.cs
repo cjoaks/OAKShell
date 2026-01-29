@@ -40,16 +40,16 @@ public sealed class RemoveFilesCommand(IFileSystemOperationService fileOperation
     /// <summary>
     /// Handler for remove files command.
     /// </summary>
-    /// <param name="result"></param>
+    /// <param name="input"></param>
     /// <returns></returns>
-    public async Task Handler(ParseResult result)
+    public async Task Handler(ParseResult input)
     {
-        var pattern = result.GetRequiredValue<string>("--pattern");
-        var listOnly = result.GetValue<bool>("--list");
-        var directoryPath = result.GetValue<string>("--path");
+        var pattern = input.GetRequiredValue<string>("--pattern");
+        var listOnly = input.GetValue<bool>("--list");
+        var directoryPath = input.GetValue<string>("--path");
         if (directoryPath != null && !_fileSystemOperationService.DirectoryExists(directoryPath))
         {
-            Console.WriteLine($"Specififed directory {directoryPath} does not exist."); 
+            Console.Error.WriteLine($"Specififed directory {directoryPath} does not exist."); 
             return;
         }
         var filePathArray = _fileSystemOperationService.FindFiles(pattern, directoryPath);
