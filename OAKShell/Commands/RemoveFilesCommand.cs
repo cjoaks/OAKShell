@@ -19,16 +19,16 @@ public sealed class RemoveFilesCommand(IFileSystemOperationService fileOperation
     {
         var removeFiles = new Command(Verb, Description)
         {
-            new Option<string>("-pattern", "-file")
+            new Option<string>("--pattern", "--file", "-f")
             {
                 Description = "The pattern matching the files to delete.",
                 Required = true
             },
-            new Option<bool>("-list", "-l", "-ls")
+            new Option<bool>("--list", "-l")
             {
                 Description = "If included, the files matching the given pattern will only be listed in the console, not deleted."
             }, 
-            new Option<string>("-path")
+            new Option<string>("--path", "-p")
             {
                 Description = "File path to directory to search."
             }
@@ -44,9 +44,9 @@ public sealed class RemoveFilesCommand(IFileSystemOperationService fileOperation
     /// <returns></returns>
     public async Task Handler(ParseResult result)
     {
-        var pattern = result.GetRequiredValue<string>("-pattern");
-        var listOnly = result.GetValue<bool>("-list");
-        var directoryPath = result.GetValue<string>("-path");
+        var pattern = result.GetRequiredValue<string>("--pattern");
+        var listOnly = result.GetValue<bool>("--list");
+        var directoryPath = result.GetValue<string>("--path");
         if (directoryPath != null && !_fileSystemOperationService.DirectoryExists(directoryPath))
         {
             Console.WriteLine($"Specififed directory {directoryPath} does not exist."); 

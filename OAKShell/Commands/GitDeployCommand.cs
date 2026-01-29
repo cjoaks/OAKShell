@@ -19,16 +19,16 @@ public sealed class GitDeployCommand(IProcessService processService) : IOAKShell
     {
         var command = new Command(Verb, Description)
         {
-            new Option<string>("-path", "-repo", "-p")
+            new Option<string>("--path", "--repo", "-p")
             {
                 Description = "Optional path to Git repository outside of the current working directory."
             }, 
-            new Option<string>("-source", "-s")
+            new Option<string>("--source", "-s")
             {
                 Description = "Source branch where code to deploy is coming from.",
                 Required = true
             }, 
-            new Option<string>("-destination", "-dest", "-d")
+            new Option<string>("--destination", "--dest", "-d")
             {
                 Description = "Destination branch to deploy code to.", 
                 Required = true
@@ -45,9 +45,9 @@ public sealed class GitDeployCommand(IProcessService processService) : IOAKShell
     /// <returns></returns>
     public async Task Handler(ParseResult result)
     {
-        var sourceBranch = result.GetRequiredValue<string>("-source");
-        var destinationBranch = result.GetRequiredValue<string>("-destination"); 
-        var repoPath = result.GetValue<string>("-path");
+        var sourceBranch = result.GetRequiredValue<string>("--source");
+        var destinationBranch = result.GetRequiredValue<string>("--destination"); 
+        var repoPath = result.GetValue<string>("--path");
         string[] commandSequence = [
                 $"checkout {sourceBranch}", "pull origin",
                 $"checkout {destinationBranch}", "pull origin", 
